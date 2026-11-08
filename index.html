@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>雨天网约车出行调查</title>
+  <style>
+    html, body { min-height: 100%; margin: 0; }
+    body { display: grid; place-items: center; background: #f5f7fb; color: #263348;
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 28rem; padding: 2rem; text-align: center; }
+    .spinner { width: 2rem; height: 2rem; margin: 0 auto 1.3rem; border: 3px solid #d8e3f4;
+      border-top-color: #2470ca; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    a { color: #1766bd; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="status" role="status">正在打开问卷，请稍候……</p>
+    <p id="fallback" hidden>如果没有自动跳转，请<a id="continue" rel="noreferrer">点击这里继续</a>。</p>
+    <noscript>此入口需要启用 JavaScript 才能随机分配问卷。</noscript>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const destinations = {
+        A: 'https://v.wjx.cn/vm/YJnT6WZ.aspx',
+        B: 'https://v.wjx.cn/vm/r0akEQ1.aspx'
+      };
+      const storageKey = 'eco3080_rainy_ride_group_v1';
+      let group;
+      try {
+        group = localStorage.getItem(storageKey);
+      } catch (_) { /* Some browsers block storage; random assignment still works. */ }
+      if (group !== 'A' && group !== 'B') {
+        const random = new Uint32Array(1);
+        crypto.getRandomValues(random);
+        group = random[0] % 2 === 0 ? 'A' : 'B';
+        try { localStorage.setItem(storageKey, group); } catch (_) { /* Continue without persistence. */ }
+      }
+      const target = destinations[group];
+      const link = document.getElementById('continue');
+      link.href = target;
+      document.getElementById('fallback').hidden = false;
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>
+
